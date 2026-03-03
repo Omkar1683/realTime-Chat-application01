@@ -1,0 +1,20 @@
+# Node
+node_modules/
+.env
+npm-debug.log*
+
+# Build outputs
+frontend/build/
+frontend/dist/
+
+# Java/Maven
+selenium-tests/target/
+selenium-tests/test-output/
+*.class
+*.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
