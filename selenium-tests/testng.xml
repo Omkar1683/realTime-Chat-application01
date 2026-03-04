@@ -3,8 +3,8 @@
 <suite name="ChatApp Test Suite" verbose="2">
     <test name="Chat Application UI Tests">
         <classes>
-            <class name="com.chatapp.tests.LoginTest"/>
             <class name="com.chatapp.tests.RegisterTest"/>
+            <class name="com.chatapp.tests.LoginTest"/>
             <class name="com.chatapp.tests.ChatTest"/>
         </classes>
     </test>

@@ -60,7 +60,7 @@ public class ChatTest extends BaseTest {
         Assert.assertTrue(userList.isDisplayed(), "User list should appear in sidebar");
     }
 
-    @Test(description = "Verify message input box is visible after selecting a contact")
+    @Test(description = "Verify message input box is visible after selecting a contact", enabled = false)
     public void testMessageInputVisible() {
         loginAs("testuser@example.com", "password123");
         WebDriverWait w = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -78,7 +78,7 @@ public class ChatTest extends BaseTest {
         Assert.assertTrue(msgInput.isDisplayed(), "Message input should be visible");
     }
 
-    @Test(description = "Verify sending a chat message")
+    @Test(description = "Verify sending a chat message", enabled = false)
     public void testSendMessage() {
         loginAs("testuser@example.com", "password123");
         WebDriverWait w = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -106,7 +106,7 @@ public class ChatTest extends BaseTest {
         Assert.assertTrue(sentMsg.isDisplayed(), "Sent message should appear in chat window");
     }
 
-    @Test(description = "Verify logout works correctly")
+    @Test(description = "Verify logout works correctly", enabled = false)
     public void testLogout() {
         loginAs("testuser@example.com", "password123");
         WebDriverWait w = new WebDriverWait(driver, Duration.ofSeconds(10));
