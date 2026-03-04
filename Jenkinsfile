@@ -81,6 +81,13 @@ pipeline {
         stage('Selenium/TestNG - Run Tests') {
             steps {
                 dir('selenium-tests') {
+                    echo 'Starting Backend Server...'
+                    sh 'cd ../backend && npm start &'
+                    echo 'Starting Frontend Server...'
+                    sh 'cd ../frontend && npm run dev &'
+                    echo 'Waiting for servers to start...'
+                    sh 'sleep 10'
+                    
                     echo 'Running Selenium/TestNG tests...'
                     // Headless mode via chromedriver; ensure Jenkins node has Chrome installed
                     sh 'mvn test -Dheadless=true'
@@ -88,15 +95,10 @@ pipeline {
             }
             post {
                 always {
-                    // Publish TestNG HTML Report
-                    publishHTML(target: [
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'selenium-tests/test-output',
-                        reportFiles          : 'index.html',
-                        reportName           : 'TestNG Report'
-                    ])
+                    // Stop the background servers
+                    sh 'pkill -f "node server.js" || true'
+                    sh 'pkill -f "vite" || true'
+
                     // Publish Surefire XML for Jenkins test results
                     junit 'selenium-tests/target/surefire-reports/*.xml'
                 }
