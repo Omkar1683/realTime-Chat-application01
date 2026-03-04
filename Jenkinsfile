@@ -125,14 +125,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                // Replace with your actual deploy script / Docker command / PM2
-                sh '''
+                // Using Windows batch commands for PM2 deployment
+                bat '''
                     echo "Stopping existing backend (if any)..."
-                    pkill -f "node server.js" || true
+                    npx pm2 stop chat-backend || exit 0
 
                     echo "Starting backend with PM2..."
-                    cd backend && npm install --production
-                    pm2 start server.js --name chat-backend --update-env || pm2 restart chat-backend
+                    cd backend && npm install --omit=dev
+                    npx pm2 start server.js --name chat-backend --update-env || npx pm2 restart chat-backend
 
                     echo "Deploy complete!"
                 '''
