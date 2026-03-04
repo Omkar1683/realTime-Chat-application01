@@ -99,6 +99,11 @@ pipeline {
                                 echo 'Waiting for servers to start...'
                                 sleep 10
                                 
+                                echo 'Seeding test database...'
+                                dir('../backend') {
+                                    bat 'node seed.js'
+                                }
+
                                 echo 'Running Selenium/TestNG tests...'
                                 // Headless mode via chromedriver; ensure Jenkins node has Chrome installed
                                 // Catch errors so the pipeline can proceed to kill servers
