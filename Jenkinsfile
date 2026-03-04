@@ -81,16 +81,33 @@ pipeline {
         stage('Selenium/TestNG - Run Tests') {
             steps {
                 dir('selenium-tests') {
-                    echo 'Starting Backend Server...'
-                    bat 'cd ../backend && start /b npm start'
-                    echo 'Starting Frontend Server...'
-                    bat 'cd ../frontend && start /b npm run dev'
-                    echo 'Waiting for servers to start...'
-                    bat 'timeout /t 10 /nobreak'
-                    
-                    echo 'Running Selenium/TestNG tests...'
-                    // Headless mode via chromedriver; ensure Jenkins node has Chrome installed
-                    sh 'mvn test -Dheadless=true'
+                    script {
+                        parallel(
+                            "Backend Server": {
+                                dir('../backend') {
+                                    echo 'Starting Backend Server...'
+                                    bat 'npm start'
+                                }
+                            },
+                            "Frontend Server": {
+                                dir('../frontend') {
+                                    echo 'Starting Frontend Server...'
+                                    bat 'npm run dev'
+                                }
+                            },
+                            "Run Tests": {
+                                echo 'Waiting for servers to start...'
+                                sleep 10
+                                
+                                echo 'Running Selenium/TestNG tests...'
+                                // Headless mode via chromedriver; ensure Jenkins node has Chrome installed
+                                // Catch errors so the pipeline can proceed to kill servers
+                                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                                    bat 'mvn test -Dheadless=true'
+                                }
+                            }
+                        )
+                    }
                 }
             }
             post {
