@@ -114,13 +114,9 @@ pipeline {
                     bat 'call npx pm2 delete test-backend test-frontend || exit 0'
 
                     // Ensure PM2 daemon is killed so workspace can be deleted
-                    bat 'call npx pm2 kill || exit 0'
+                  
 
-                    // Fallback to stop the chromedriver processes
-                    bat 'taskkill /F /IM chromedriver.exe /T || exit 0'
-
-                    // Publish Surefire XML for Jenkins test results
-                    junit 'selenium-tests/target/surefire-reports/*.xml'
+         
                 }
             }
         }
