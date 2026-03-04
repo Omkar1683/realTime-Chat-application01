@@ -84,12 +84,12 @@ pipeline {
                     script {
                         echo 'Starting Backend Server...'
                         dir('../backend') {
-                            bat 'npx pm2 start server.js --name test-backend'
+                            bat 'call npx pm2 start server.js --name test-backend'
                         }
 
                         echo 'Starting Frontend Server...'
                         dir('../frontend') {
-                            bat 'npx pm2 start npm --name test-frontend -- run dev'
+                            bat 'call npx pm2 start node_modules\\vite\\bin\\vite.js --name test-frontend'
                         }
 
                         echo 'Waiting for servers to start...'
@@ -111,9 +111,13 @@ pipeline {
             post {
                 always {
                     // Stop and remove the PM2 background servers
-                    bat 'npx pm2 delete test-backend test-frontend || exit 0'
+                    bat 'call npx pm2 delete test-backend test-frontend || exit 0'
+                    // Ensure PM2 daemon is killed so workspace can be deleted
+                    bat 'call npx pm2 kill || exit 0'
+
                     // Fallback to stop the background servers
                     bat 'taskkill /F /IM node.exe /T || exit 0'
+                    bat 'taskkill /F /IM chromedriver.exe /T || exit 0'
 
                     // Publish Surefire XML for Jenkins test results
                     junit 'selenium-tests/target/surefire-reports/*.xml'
@@ -128,11 +132,11 @@ pipeline {
                 // Using Windows batch commands for PM2 deployment
                 bat '''
                     echo "Stopping existing backend (if any)..."
-                    npx pm2 stop chat-backend || exit 0
+                    call npx pm2 stop chat-backend || exit 0
 
                     echo "Starting backend with PM2..."
                     cd backend && npm install --omit=dev
-                    npx pm2 start server.js --name chat-backend --update-env || npx pm2 restart chat-backend
+                    call npx pm2 start server.js --name chat-backend --update-env || call npx pm2 restart chat-backend
 
                     echo "Deploy complete!"
                 '''
