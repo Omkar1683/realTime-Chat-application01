@@ -3,9 +3,9 @@ pipeline {
 
     tools {
         // Ensure these are configured in Jenkins Global Tool Configuration
-        nodejs 'NodeJS-18'
-        maven  'Maven-3.9'
-        jdk    'JDK-17'
+        nodejs 'Node18'
+        maven  'Maven3'
+        jdk    'JDK24'
     }
 
     environment {
