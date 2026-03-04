@@ -82,11 +82,11 @@ pipeline {
             steps {
                 dir('selenium-tests') {
                     echo 'Starting Backend Server...'
-                    sh 'cd ../backend && npm start &'
+                    bat 'cd ../backend && start /b npm start'
                     echo 'Starting Frontend Server...'
-                    sh 'cd ../frontend && npm run dev &'
+                    bat 'cd ../frontend && start /b npm run dev'
                     echo 'Waiting for servers to start...'
-                    sh 'sleep 10'
+                    bat 'timeout /t 10 /nobreak'
                     
                     echo 'Running Selenium/TestNG tests...'
                     // Headless mode via chromedriver; ensure Jenkins node has Chrome installed
@@ -95,9 +95,8 @@ pipeline {
             }
             post {
                 always {
-                    // Stop the background servers
-                    sh 'pkill -f "node server.js" || true'
-                    sh 'pkill -f "vite" || true'
+                    // Stop the background servers (Windows equivalent of pkill)
+                    bat 'taskkill /F /IM node.exe /T || exit 0'
 
                     // Publish Surefire XML for Jenkins test results
                     junit 'selenium-tests/target/surefire-reports/*.xml'
