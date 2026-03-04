@@ -82,42 +82,37 @@ pipeline {
             steps {
                 dir('selenium-tests') {
                     script {
-                        parallel(
-                            "Backend Server": {
-                                dir('../backend') {
-                                    echo 'Starting Backend Server...'
-                                    bat 'npm start'
-                                }
-                            },
-                            "Frontend Server": {
-                                dir('../frontend') {
-                                    echo 'Starting Frontend Server...'
-                                    bat 'npm run dev'
-                                }
-                            },
-                            "Run Tests": {
-                                echo 'Waiting for servers to start...'
-                                sleep 10
-                                
-                                echo 'Seeding test database...'
-                                dir('../backend') {
-                                    bat 'node seed.js'
-                                }
+                        echo 'Starting Backend Server...'
+                        dir('../backend') {
+                            bat 'npx pm2 start server.js --name test-backend'
+                        }
 
-                                echo 'Running Selenium/TestNG tests...'
-                                // Headless mode via chromedriver; ensure Jenkins node has Chrome installed
-                                // Catch errors so the pipeline can proceed to kill servers
-                                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                                    bat 'mvn test -Dheadless=true'
-                                }
-                            }
-                        )
+                        echo 'Starting Frontend Server...'
+                        dir('../frontend') {
+                            bat 'npx pm2 start npm --name test-frontend -- run dev'
+                        }
+
+                        echo 'Waiting for servers to start...'
+                        sleep 15
+                        
+                        echo 'Seeding test database...'
+                        dir('../backend') {
+                            bat 'node seed.js'
+                        }
+
+                        echo 'Running Selenium/TestNG tests...'
+                        // Catch errors so the pipeline can proceed to kill servers
+                        catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                            bat 'mvn test -Dheadless=true'
+                        }
                     }
                 }
             }
             post {
                 always {
-                    // Stop the background servers (Windows equivalent of pkill)
+                    // Stop and remove the PM2 background servers
+                    bat 'npx pm2 delete test-backend test-frontend || exit 0'
+                    // Fallback to stop the background servers
                     bat 'taskkill /F /IM node.exe /T || exit 0'
 
                     // Publish Surefire XML for Jenkins test results

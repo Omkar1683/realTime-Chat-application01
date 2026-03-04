@@ -6,7 +6,10 @@ const mongoose = require("mongoose");
 const TEST_DB = "mongodb://localhost:27017/chatapp_test";
 
 beforeAll(async () => {
-    await mongoose.connect(TEST_DB);
+    if (mongoose.connection.readyState === 0) {
+        await mongoose.connect(TEST_DB);
+    }
+    await mongoose.connection.dropDatabase();
 });
 
 afterAll(async () => {
