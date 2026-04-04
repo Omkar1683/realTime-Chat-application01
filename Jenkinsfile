@@ -34,9 +34,9 @@ pipeline {
        }
    }
 
-   post {
-       always {
-           junit 'selenium-tests/target/surefire-reports/*.xml'
-       }
-   }
+ post {
+    always {
+        echo 'Build Completed'
+    }
+}
 }
