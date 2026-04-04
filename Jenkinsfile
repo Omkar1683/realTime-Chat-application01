@@ -20,10 +20,10 @@ pipeline {
        }
 
        stage('Wait') {
-           steps {
-               bat 'timeout /t 10'
-           }
-       }
+    steps {
+        bat 'ping 127.0.0.1 -n 10 > nul'
+    }
+}
 
        stage('Run Selenium Tests') {
            steps {
