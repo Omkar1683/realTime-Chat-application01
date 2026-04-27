@@ -1,42 +1,42 @@
 pipeline {
-   agent { label 'mern-agent' }
+    agent any
 
-   stages {
+    stages {
 
-       stage('Install Backend') {
-           steps {
-               dir('backend') {
-                   bat 'npm install'
-               }
-           }
-       }
+        stage('Clone Repo') {
+            steps {
+                echo 'Cloning repository...'
+                checkout scm
+            }
+        }
 
-       stage('Start Backend') {
-           steps {
-               dir('backend') {
-                   bat 'start /B npm start'
-               }
-           }
-       }
+        stage('Install Backend Dependencies') {
+            steps {
+                dir('backend') {
+                    bat 'npm install'
+                }
+            }
+        }
 
-       stage('Wait') {
-    steps {
-        bat 'ping 127.0.0.1 -n 10 > nul'
+        stage('Run Backend') {
+            steps {
+                dir('backend') {
+                    bat 'start /B node server.js'
+                }
+            }
+        }
+
+        stage('Build Success') {
+            steps {
+                echo 'Build Success'
+            }
+        }
+
     }
-}
 
-       stage('Run Selenium Tests') {
-           steps {
-               dir('selenium-tests') {
-                   bat 'mvn clean test'
-               }
-           }
-       }
-   }
-
- post {
-    always {
-        echo 'Build Completed'
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
     }
-}
 }

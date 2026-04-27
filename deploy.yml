@@ -1,0 +1,38 @@
+- name: Deploy MERN Backend
+  hosts: local
+  become: yes
+
+  tasks:
+
+    - name: Install Node.js
+      apt:
+        name: nodejs
+        state: present
+        update_cache: yes
+
+    - name: Install npm
+      apt:
+        name: npm
+        state: present
+
+    - name: Create app directory
+      file:
+        path: /home/omkar/chatapp
+        state: directory
+
+    - name: Copy backend files (exclude node_modules)
+      synchronize:
+        src: /mnt/c/Users/omram/Desktop/jenkins-pipeline-demo/backend/
+        dest: /home/omkar/chatapp/
+        rsync_opts:
+          - "--exclude=node_modules"
+
+    - name: Install dependencies
+      command: npm install
+      args:
+        chdir: /home/omkar/chatapp
+
+    - name: Start Node server
+      command: node server.js
+      args:
+        chdir: /home/omkar/chatapp
